@@ -19,10 +19,10 @@ func sendMessage(connection *stomp.Conn, message string) {
 	if err != nil {
 		log.Fatalln("Erro ao postar mensagem na fila:", err)
 	}
+	log.Printf("Enviando mensagem: %s", message)
 }
 
 func main() {
-	var message string
 	log.Println("Inicializando o producer")
 	utils.LoadEnv()
 	// Conectando ao message broker
@@ -32,10 +32,14 @@ func main() {
 		log.Fatalln("Erro ao conectar com o broker:", err)
 	}
 	defer conn.Disconnect()
-	for idx := 0; idx < 10; idx++ {
-		message = time.DateTime
-		log.Printf("Enviando mensagem: %s", message)
-		sendMessage(conn, message)
-	}
 
+	if len(os.Args) > 1 {
+		log.Println(os.Args[1])
+		sendMessage(conn, os.Args[1])
+	} else {
+		for idx := 0; idx < 1000; idx++ {
+			message := time.Now().Format("2006-01-02 15:04:05")
+			sendMessage(conn, message)
+		}
+	}
 }
